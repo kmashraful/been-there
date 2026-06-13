@@ -1,6 +1,6 @@
 # Been There · A Travel Story Map
 
-My personal travel story map. It keeps the stories, photos, and memories from places I have visited in the United States, pinned to the map where they happened. It works like a travel blog, except the posts are organized by geography instead of by date.
+My personal travel story map. It keeps the stories, photos, and memories from places I have visited in the United States, pinned to the map where they happened. It works like a travel blog, except the posts are organized by geography instead of by date. Check it out: https://kmashraful.github.io/been-there/
 
 The home page is a scroll-driven journey over a dark dusk-toned basemap. Each place becomes a numbered stop, and as you scroll the map flies from one stop to the next. A stop can carry a photo story: keep scrolling past it and the photos and the written story for that place appear one card at a time while the map holds position. The second tab, **The Gazetteer**, is a browsable index of every place, grouped into cities and parks, with a detail card and a fully interactive map. Whenever the map is zoomed in or a place is selected, a "Back to 30,000 ft" button appears on the map and climbs back out to the full overview. The home page has its own + and &minus; buttons on the right edge for leaning into the map mid-journey; the next stop re-frames the view automatically.
 
