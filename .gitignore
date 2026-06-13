@@ -1,0 +1,8 @@
+# Original full-size photos and draft text. These are large (hundreds of MB)
+# and are not needed to run the site. The web-sized copies in images/ are
+# what the pages actually load, so they stay tracked.
+images_and_descrip/
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db

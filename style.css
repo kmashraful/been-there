@@ -1,0 +1,495 @@
+/* ============================================================
+   style.css · Been There · A Travel Story Map
+   ------------------------------------------------------------
+   Contents
+     01 Design tokens
+     02 Reset and base
+     03 Top bar
+     04 Map, tint, HUD, progress
+     05 Hero
+     06 Story steps
+     07 Markers, route, Leaflet overrides
+     08 Outro and footer
+     09 Gazetteer
+     10 Responsive
+     11 Motion preferences
+   ============================================================ */
+
+/* 01 Design tokens
+   Palette: black and gold elegance
+   #FFFFFF white · #E5E5E5 silver · #FCA311 gold · #14213D navy · #000000 black */
+:root {
+  --bg: #000000;
+  --bg-soft: #14213d;
+  --panel: rgba(20, 33, 61, 0.84);
+  --ink: #ffffff;
+  --ink-dim: rgba(229, 229, 229, 0.72);
+  --line: rgba(229, 229, 229, 0.16);
+  --accent: #fca311;
+  --accent-dim: rgba(252, 163, 17, 0.55);
+  --accent-soft: rgba(252, 163, 17, 0.16);
+  --silver: #e5e5e5;
+  --font-sans: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --radius: 14px;
+  --topbar-h: 64px;
+}
+
+/* 02 Reset and base */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.6 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, svg { display: block; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.015em; line-height: 1.12; }
+p { margin: 0; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+::selection { background: var(--accent-soft); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--font-mono); }
+.accent { color: var(--accent); }
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 40;
+  background: var(--accent); color: #000000; padding: 10px 14px;
+  border-radius: 0 0 8px 0; font-family: var(--font-mono); font-size: 12px;
+}
+.skip-link:focus { left: 0; }
+.noscript {
+  position: relative; z-index: 2; padding: 14px 20px; text-align: center;
+  color: var(--accent); font-family: var(--font-mono); font-size: 13px;
+}
+
+/* 03 Top bar */
+.topbar {
+  position: fixed; inset: 0 0 auto 0; height: var(--topbar-h); z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(16px, 3vw, 32px);
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); }
+.brand:hover { text-decoration: none; }
+.brand-mark { color: var(--accent); }
+.brand-name { font-weight: 700; font-size: 14px; letter-spacing: 0.16em; }
+.brand-sub { font-size: 10px; letter-spacing: 0.22em; color: var(--ink-dim); }
+.topnav { display: flex; gap: clamp(14px, 2.5vw, 28px); }
+.topnav a {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-dim);
+  padding: 6px 2px; border-bottom: 1px solid transparent;
+}
+.topnav a:hover { color: var(--ink); text-decoration: none; }
+.topnav a[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* 04 Map, tint, HUD, progress */
+.page-story #map { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.map-tint {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(229, 229, 229, 0.028) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(90deg, rgba(229, 229, 229, 0.028) 0 1px, transparent 1px 64px),
+    radial-gradient(125% 95% at 68% 38%, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.52) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0) 22%,
+                    rgba(0, 0, 0, 0) 72%, rgba(0, 0, 0, 0.66) 100%);
+}
+/* Tints CARTO's gray dark basemap toward dusk navy. Tune hue-rotate
+   for the hue (lower is bluer, higher is more purple) and saturate
+   for how strong the color reads. */
+.leaflet-tile {
+  filter: sepia(0.85) hue-rotate(200deg) saturate(1.8) brightness(0.9) contrast(1.05);
+}
+.hud {
+  position: fixed; left: 18px; bottom: 16px; z-index: 6; pointer-events: none;
+  display: flex; flex-direction: column; gap: 3px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.hud-a { color: var(--accent); }
+/* Journey page zoom buttons, mid-right where the map is open */
+.zoom-stack {
+  position: fixed; right: 14px; top: 50%; transform: translateY(-50%);
+  z-index: 6; display: flex; flex-direction: column; gap: 8px;
+}
+.zoom-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 33, 61, 0.72); color: var(--ink);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+  font-size: 18px; line-height: 1;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.zoom-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
+.progress {
+  position: fixed; top: 0; left: 0; height: 2px; width: 0; z-index: 30;
+  background: linear-gradient(90deg, var(--accent), var(--silver));
+}
+
+/* Small-screen tip card: hidden on desktop, slides in on phones
+   and tablets, dismissable with the choice remembered */
+.desktop-hint {
+  position: fixed; right: 14px; bottom: 14px; z-index: 24;
+  display: none; align-items: flex-start; gap: 10px;
+  max-width: 270px; padding: 12px 14px;
+  background: rgba(20, 33, 61, 0.55);
+  border: 1px solid var(--line); border-radius: 12px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+.desktop-hint p {
+  font-size: 11px; line-height: 1.55; letter-spacing: 0.06em;
+  color: var(--ink-dim);
+}
+.hint-close { padding: 0 2px; font-size: 17px; line-height: 1; color: var(--ink-dim); }
+.hint-close:hover { color: var(--ink); }
+@media (max-width: 900px) {
+  .desktop-hint { display: flex; animation: hint-in 0.6s ease 1.4s backwards; }
+}
+@keyframes hint-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 05 Hero */
+.page-story main, .page-story footer { position: relative; z-index: 2; }
+.step {
+  min-height: 96vh; display: flex; align-items: center;
+  padding-left: clamp(18px, 6vw, 96px); padding-right: 18px;
+}
+.hero {
+  min-height: 100vh; justify-content: center;
+  padding-left: 18px; padding-top: calc(var(--topbar-h) + 8px);
+}
+.panel {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+.hero-card { max-width: 720px; padding: clamp(28px, 5vw, 56px); }
+.kicker {
+  font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent);
+}
+.hero-card h1 { margin-top: 14px; font-size: clamp(2.6rem, 7vw, 4.8rem); letter-spacing: -0.03em; }
+.byline {
+  margin-top: 14px; font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.lede {
+  margin-top: 18px; max-width: 56ch;
+  font-size: clamp(1rem, 1.4vw, 1.125rem); opacity: 0.92;
+}
+.hero-count {
+  margin-top: 16px; font-size: 11px; letter-spacing: 0.22em;
+  color: var(--silver); text-transform: uppercase;
+}
+.scroll-hint {
+  margin-top: 30px; font-size: 11px; letter-spacing: 0.22em;
+  color: var(--ink-dim); text-transform: uppercase;
+}
+.hint-line {
+  display: block; width: 1px; height: 34px; margin-top: 12px;
+  background: linear-gradient(180deg, var(--accent), transparent);
+  transform-origin: top; animation: drop 1.9s ease-in-out infinite;
+}
+@keyframes drop {
+  0% { transform: scaleY(0); opacity: 0; }
+  30% { opacity: 1; }
+  85%, 100% { transform: scaleY(1); opacity: 0; }
+}
+
+/* 06 Story steps */
+.step-card {
+  width: min(430px, 90vw); padding: 26px 28px 28px;
+  opacity: 0.42; transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.5s ease;
+}
+.step-card.is-active { opacity: 1; transform: none; border-color: var(--accent-dim); }
+.stop-label { font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); }
+.step-card h2 { margin-top: 10px; font-size: clamp(1.6rem, 3vw, 2.1rem); }
+.meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim);
+}
+.badge {
+  padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line);
+  letter-spacing: 0.18em; font-size: 10px;
+}
+.badge-park { color: var(--silver); border-color: rgba(229, 229, 229, 0.45); }
+.badge-city { color: var(--accent); border-color: var(--accent-dim); }
+.blurb { margin-top: 14px; opacity: 0.9; font-size: 0.98rem; }
+.visited {
+  margin-top: 14px; font-size: 11px; letter-spacing: 0.14em;
+  color: var(--ink-dim); text-transform: uppercase;
+}
+
+/* Story notes: photo and text cards that follow a place card.
+   display: table shrink-wraps the figure to the image, so portrait
+   photos stay portrait, landscape stay landscape, and the caption
+   never runs wider than the photo. */
+.step-card.note-card { width: min(520px, 92vw); padding: 20px 22px 26px; }
+.note-photo { display: table; margin: 0 auto 16px; }
+.note-photo img {
+  display: block; max-width: 100%; max-height: 56vh;
+  width: auto; height: auto;
+  border-radius: 9px; border: 1px solid var(--line);
+}
+.note-photo figcaption {
+  margin-top: 10px; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.note-text { margin-top: 12px; font-size: 0.95rem; opacity: 0.9; }
+.note-text:first-child { margin-top: 0; }
+
+/* Bleed note: an opening that floats over the map. No card chrome.
+   A gradient (on ::before so the text stays crisp) fades into the
+   basemap on the right and softens at top and bottom, so the words
+   read as if written onto the map itself. Opt in with bleed: true. */
+.step-bleed { padding-left: 0; padding-right: 0; }
+.step-bleed .note-card.note-bleed {
+  position: relative;
+  width: min(700px, 100%);
+  padding: 34px clamp(44px, 12vw, 180px) 36px clamp(18px, 6vw, 96px);
+  background: none; border: none; border-radius: 0;
+  box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.step-bleed .note-card.note-bleed::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg,
+    rgba(7, 11, 20, 0.9) 0%,
+    rgba(7, 11, 20, 0.72) 32%,
+    rgba(20, 33, 61, 0.26) 70%,
+    rgba(20, 33, 61, 0) 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 20%, #000 80%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 20%, #000 80%, transparent 100%);
+}
+.step-bleed .note-text {
+  opacity: 1; text-shadow: 0 1px 16px rgba(0, 0, 0, 0.55);
+}
+.step-bleed .note-text:first-child {
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem); color: var(--ink);
+}
+
+/* In-transit scene: extra height gives the plane room to fly the
+   route while you scroll through it */
+.step-transit { min-height: 150vh; }
+.transit-card { width: min(340px, 88vw); padding: 22px 24px 24px; }
+.transit-route {
+  margin-top: 12px; font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+  letter-spacing: 0.14em; color: var(--accent);
+}
+.transit-note { margin-top: 10px; font-size: 0.95rem; color: var(--ink-dim); }
+
+/* 07 Markers, route, Leaflet overrides */
+.gcp-wrap { background: transparent; border: none; }
+.gcp {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1.5px solid var(--accent-dim);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5);
+  transition: transform 0.35s ease, border-color 0.35s ease;
+}
+.gcp::before {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%;
+  background: var(--accent-dim); transition: background 0.35s ease;
+}
+.gcp-pulse {
+  position: absolute; inset: -3px; border-radius: 50%;
+  border: 1px solid var(--accent); opacity: 0;
+}
+.gcp-wrap.is-active .gcp { transform: scale(1.32); border-color: var(--accent); }
+.gcp-wrap.is-active .gcp::before { background: var(--accent); }
+.gcp-wrap.is-active .gcp-pulse {
+  animation: ping 1.7s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+@keyframes ping {
+  0% { transform: scale(0.55); opacity: 0.85; }
+  80%, 100% { transform: scale(2.2); opacity: 0; }
+}
+/* Arrival flight: dotted arc with drifting dots, a labeled origin dot,
+   and a plane icon rotated along its heading */
+.flight-path { animation: dashflow 2.2s linear infinite; }
+@keyframes dashflow { to { stroke-dashoffset: -24; } }
+.origin-wrap { background: transparent; border: none; }
+.origin-dot {
+  position: absolute; inset: 1px; border-radius: 50%;
+  background: var(--silver);
+  box-shadow: 0 0 8px 2px rgba(229, 229, 229, 0.4);
+}
+.plane-wrap { background: transparent; border: none; }
+.plane-rot {
+  display: block; width: 26px; height: 26px; color: var(--accent);
+  filter: drop-shadow(0 0 6px rgba(252, 163, 17, 0.55));
+  transition: transform 0.15s linear;
+}
+.plane-rot svg { display: block; }
+
+/* Story spots: photo locations that light up while their card is read.
+   The base state is invisible; is-lit fades it in, is-current pulses. */
+.spot-wrap { background: transparent; border: none; }
+.spot {
+  position: absolute; inset: 1px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 2px rgba(252, 163, 17, 0.45);
+  opacity: 0; transform: scale(0.3);
+  transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.6s ease;
+}
+.spot-pulse {
+  position: absolute; inset: -4px; border-radius: 50%;
+  border: 1px solid var(--accent); opacity: 0;
+}
+.spot-wrap.is-lit .spot { opacity: 0.8; transform: scale(1); }
+.spot-wrap.is-current .spot {
+  opacity: 1; box-shadow: 0 0 16px 5px rgba(252, 163, 17, 0.65);
+}
+.spot-wrap.is-current .spot-pulse {
+  animation: ping 1.7s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+/* Hub state: the place marker pulses larger while its story is open */
+.gcp-wrap.is-hub .gcp { transform: scale(1.6); border-color: var(--accent); }
+.gcp-wrap.is-hub .gcp-pulse {
+  inset: -6px;
+  animation: ping-big 2.2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+@keyframes ping-big {
+  0% { transform: scale(0.5); opacity: 0.9; }
+  80%, 100% { transform: scale(3.4); opacity: 0; }
+}
+.leaflet-container { background: var(--bg); font-family: var(--font-sans); }
+.leaflet-tooltip.gcp-tip {
+  background: rgba(20, 33, 61, 0.93); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+  font: 500 11px/1.3 var(--font-mono); letter-spacing: 0.06em; padding: 6px 9px;
+}
+.leaflet-tooltip.gcp-tip::before { display: none; }
+.leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.72) !important; color: var(--ink-dim);
+  font: 400 10px/1.5 var(--font-mono);
+}
+.leaflet-control-attribution a { color: var(--ink-dim); text-decoration: underline; }
+.leaflet-bar { border: 1px solid var(--line) !important; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4); }
+.leaflet-bar a { background: rgba(20, 33, 61, 0.92); color: var(--ink); border-bottom: 1px solid var(--line); }
+.leaflet-bar a:hover { background: rgba(26, 42, 77, 0.95); color: var(--accent); }
+
+/* 08 Outro and footer */
+.outro { justify-content: center; padding-left: 18px; min-height: 88vh; }
+.outro-card { max-width: 620px; padding: clamp(28px, 5vw, 52px); }
+.outro-card h2 { margin-top: 14px; font-size: clamp(1.9rem, 4.5vw, 3rem); }
+.outro-stats {
+  margin-top: 16px; font-size: 12px; letter-spacing: 0.22em;
+  color: var(--ink-dim); text-transform: uppercase;
+}
+.btn {
+  display: inline-block; margin-top: 26px; padding: 12px 22px;
+  border: 1px solid var(--accent); border-radius: 10px; color: var(--accent);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.16em;
+  text-transform: uppercase; transition: background 0.25s ease, color 0.25s ease;
+}
+.btn:hover { background: var(--accent); color: #14213d; text-decoration: none; }
+footer {
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center;
+  padding: 16px clamp(16px, 3vw, 32px);
+  border-top: 1px solid var(--line); background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--ink-dim);
+}
+footer a { color: var(--ink-dim); text-decoration: underline; }
+
+/* 09 Gazetteer */
+.page-gazetteer main { padding-top: var(--topbar-h); }
+.gaz-layout {
+  display: grid; grid-template-columns: minmax(360px, 460px) 1fr;
+  min-height: calc(100vh - var(--topbar-h));
+}
+.gaz-panel {
+  padding: clamp(28px, 4vw, 52px) clamp(20px, 3vw, 40px) 72px;
+  border-right: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--bg-soft), var(--bg));
+}
+.gaz-panel h1 { margin-top: 14px; font-size: clamp(2rem, 4vw, 2.9rem); }
+.gaz-stats {
+  margin-top: 12px; font-size: 11px; letter-spacing: 0.22em;
+  color: var(--ink-dim); text-transform: uppercase;
+}
+.detail-card {
+  margin-top: 26px; padding: 24px 26px 26px;
+  background: var(--panel); border: 1px solid var(--accent-dim); border-radius: var(--radius);
+}
+.detail-card h2 { margin-top: 8px; font-size: clamp(1.5rem, 2.6vw, 1.9rem); }
+.detail-story {
+  margin-top: 18px; padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.detail-story .note-photo { margin: 20px auto 14px; }
+.coords { margin-top: 12px; font-size: 12px; letter-spacing: 0.1em; color: var(--silver); }
+.index-list { list-style: none; margin: 34px 0 0; padding: 0; }
+.index-group {
+  padding: 26px 6px 9px; font-size: 10px; letter-spacing: 0.26em;
+  text-transform: uppercase; color: var(--accent);
+  border-bottom: 1px solid var(--line);
+}
+.index-list > li:first-child.index-group { padding-top: 0; }
+.index-row {
+  display: grid; grid-template-columns: 3ch 1fr auto; gap: 14px; width: 100%;
+  padding: 11px 6px; border-bottom: 1px solid var(--line);
+  font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-dim); text-align: left;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.index-row:hover { color: var(--ink); background: rgba(229, 229, 229, 0.03); }
+.index-row.is-active { color: var(--accent); }
+.index-row .idx { color: var(--accent-dim); }
+.index-row.is-active .idx { color: var(--accent); }
+.gaz-map-wrap { position: sticky; top: var(--topbar-h); height: calc(100vh - var(--topbar-h)); }
+.overview-btn {
+  position: absolute; top: 14px; right: 14px; z-index: 800;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 14px;
+  background: rgba(20, 33, 61, 0.72); color: var(--ink);
+  border: 1px solid var(--accent-dim); border-radius: 999px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.4);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.overview-btn svg { color: var(--accent); transition: color 0.25s ease; }
+.overview-btn:hover { background: var(--accent); color: #14213d; border-color: var(--accent); }
+.overview-btn:hover svg { color: #14213d; }
+.page-gazetteer #map { width: 100%; height: 100%; }
+
+/* 10 Responsive */
+@media (max-width: 900px) {
+  .gaz-layout { grid-template-columns: 1fr; }
+  .gaz-map-wrap { order: -1; height: 44vh; z-index: 5; border-bottom: 1px solid var(--line); }
+  .gaz-panel { border-right: none; }
+}
+@media (max-width: 760px) {
+  .step { align-items: flex-end; justify-content: center; padding-left: 0; padding-bottom: 12vh; }
+  .hero, .outro { align-items: center; padding-bottom: 0; }
+  .step-card { width: min(430px, 92vw); }
+  .step-card.note-card { padding: 16px 16px 22px; }
+  .note-photo img { max-height: 44vh; }
+  .note-text { font-size: 0.92rem; }
+  .brand-sub { display: none; }
+  .hud { font-size: 10px; left: 12px; bottom: 12px; }
+}
+
+/* 11 Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .flight-path, .gcp-pulse, .hint-line, .spot-pulse, .desktop-hint { animation: none; }
+  .step-card, .spot, .plane-rot { transition: none; }
+}

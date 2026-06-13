@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Been There: a personal travel story map of places I have visited in the United States, told as a scroll-driven journey across a dark map.">
+  <meta name="theme-color" content="#000000">
+  <title>Been There &middot; A Travel Story Map</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="page-story">
+  <a class="skip-link" href="#story">Skip to the journey</a>
+
+  <header class="topbar">
+    <a class="brand" href="./index.html" aria-label="Been There home">
+      <svg class="brand-mark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="1.6">
+        <circle cx="12" cy="12" r="7"></circle>
+        <line x1="12" y1="1.5" x2="12" y2="6"></line>
+        <line x1="12" y1="18" x2="12" y2="22.5"></line>
+        <line x1="1.5" y1="12" x2="6" y2="12"></line>
+        <line x1="18" y1="12" x2="22.5" y2="12"></line>
+        <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"></circle>
+      </svg>
+      <span class="brand-name">BEEN THERE</span>
+      <span class="brand-sub mono">TRAVEL STORY MAP</span>
+    </a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="./index.html" aria-current="page">Journey</a>
+      <a href="./gazetteer.html">Gazetteer</a>
+    </nav>
+  </header>
+
+  <!-- Fixed basemap behind the scrolling story. Decorative for screen readers;
+       all place information is repeated in the step cards. -->
+  <div id="map" aria-hidden="true"></div>
+  <div class="map-tint" aria-hidden="true"></div>
+  <div id="progressBar" class="progress" aria-hidden="true"></div>
+  <div id="hud" class="hud mono" aria-hidden="true"></div>
+  <div class="zoom-stack">
+    <button id="zoomIn" class="zoom-btn mono" type="button" aria-label="Zoom the map in">+</button>
+    <button id="zoomOut" class="zoom-btn mono" type="button" aria-label="Zoom the map out">&minus;</button>
+  </div>
+
+  <!-- Shown on small screens only; dismissal is remembered -->
+  <aside id="desktopHint" class="desktop-hint" role="note" aria-label="Viewing tip">
+    <p class="mono"><span class="accent">Travel tip</span> &middot; Small screen, big country.
+       For the window seat, open this atlas on a desktop.</p>
+    <button id="hintClose" class="hint-close" type="button" aria-label="Dismiss tip">&times;</button>
+  </aside>
+
+  <main>
+    <section class="step hero" data-step="hero" aria-label="Introduction">
+      <article class="panel hero-card">
+        <p class="kicker mono">A travel story map &middot; United States</p>
+        <h1>Been <span class="accent">There</span></h1>
+        <p class="byline mono">Traveled, photographed, and written by <span class="accent">Ashraful</span></p>
+        <p class="lede">Stories from places I have visited, kept on the map where they happened. Each stop holds the photos and the memories I brought back.</p>
+        <p id="heroCount" class="hero-count mono"></p>
+        <p class="scroll-hint mono">Scroll to start the journey<span class="hint-line" aria-hidden="true"></span></p>
+      </article>
+    </section>
+
+    <!-- Stops and story cards are generated from places.js -->
+    <div id="story"></div>
+
+    <section class="step outro" data-step="outro" aria-label="End of journey">
+      <article class="panel outro-card">
+        <p class="kicker mono">End of the journey, for now</p>
+        <h2>The map keeps growing.</h2>
+        <p id="outroStats" class="outro-stats mono"></p>
+        <a class="btn" href="./gazetteer.html">Open the Gazetteer</a>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built with <a href="https://leafletjs.com" rel="noopener">Leaflet</a>.
+       Map: &copy; CARTO &copy; OpenStreetMap contributors.
+       &copy; <span id="year"></span> Ashraful.</p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">This site needs JavaScript to render the map and stories. The full place list lives in places.js.</p>
+  </noscript>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+  <script src="./places.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
