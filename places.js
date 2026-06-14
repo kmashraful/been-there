@@ -709,6 +709,84 @@ const PLACES = [
     ]
   },
   {
+    id: "north-cascades",
+    name: "North Cascades",
+    state: "Washington",
+    stateCode: "WA",
+    category: "park",
+    coords: [48.6800, -120.9500],
+    zoom: 9,
+    visited: "July 2024",
+    blurb: "The most rugged range in the Lower 48, and the least visited. Glaciers feed lakes the color of nothing else on Earth.",
+    arrival: {
+      mode: "car",
+      from: [44.5646, -123.2620],
+      fromName: "Corvallis, Oregon",
+      label: "Corvallis → North Cascades"
+    },
+    story: [
+      {
+        bleed: true,
+        paragraphs: [
+          "I have always been drawn to a particular kind of landscape. A turquoise lake, snow-capped mountains in the background, the sort of view that appears on desktop wallpapers and travel magazines. Beautiful enough to seem almost fictional.",
+          "I searched the internet one evening and discovered that Washington had exactly what I had been looking for. North Cascades National Park."
+        ]
+      },
+      {
+        img: "images/north-cascades/diablo-lake.jpg",
+        alt: "Diablo Lake glowing turquoise below forested ridges, a snow-streaked peak rising at the head of the valley",
+        caption: "Diablo Lake",
+        spot: { coords: [48.7144, -121.1357], label: "Diablo Lake Overlook" },
+        paragraphs: [
+          "A road trip soon followed. We arrived early in the morning. It was around nine o'clock when we pulled over at the viewpoint overlooking Diablo Lake. I stood there in silence.",
+          "What shade of blue was this? Turquoise did not seem sufficient. Emerald felt incomplete. The water carried a color that escaped definition. Perhaps it had borrowed its pigments from heaven. The surrounding mountains framed the lake so perfectly that the entire scene resembled a painting. I stood at the viewpoint for nearly thirty minutes. I did very little. I simply looked. Travel often encourages movement. See the next attraction. Take another photograph, keep going. Diablo Lake convinced me to remain still."
+        ]
+      },
+      {
+        img: "images/north-cascades/blue-lake.jpg",
+        alt: "Blue Lake held in a bowl of jagged peaks, its clear water revealing the rocks along the shallow shore",
+        caption: "Blue Lake",
+        spot: { coords: [48.5940, -120.6680], label: "Blue Lake" },
+        paragraphs: [
+          "Later that morning, we made our way to Blue Lake. The hike took about five hours round trip. Parts of the trail felt rugged enough to remind us that beautiful places often demand a little effort. It was worth every step."
+        ]
+      },
+      {
+        img: "images/north-cascades/blue-lake-2.jpg",
+        alt: "A wider view of Blue Lake ringed by talus and forest, a few small figures resting at the clear green water's edge",
+        caption: "Not a place to rush",
+        spot: { coords: [48.5950, -120.6700], label: "Blue Lake" },
+        paragraphs: [
+          "Blue Lake rested quietly in the embrace of towering mountains. The water was crystal clear. Fish moved beneath the surface as if they understood they lived somewhere extraordinary. The atmosphere around the lake felt wonderfully human. Some people slipped into the water to escape the summer heat. Others unpacked their lunches. Everyone seemed to understand that this was not a place to rush through."
+        ]
+      },
+      {
+        img: "images/north-cascades/ross-lake.jpg",
+        alt: "Sun flaring over Ross Lake between dark forested ridges, with the floating cabins of the resort along the far shore",
+        caption: "Ross Lake",
+        spot: { coords: [48.7290, -121.0660], label: "Ross Lake" },
+        paragraphs: [
+          "On our way back, we stopped at Ross Lake. I suspect many people know Diablo Lake and drive right past what came next. That feels like a mistake."
+        ]
+      },
+      {
+        img: "images/north-cascades/ross-lake-2.jpg",
+        alt: "A floating wooden dock with a small boat tied alongside the resort cabins, mountains framing the lake beyond",
+        caption: "Ross Lake Resort",
+        spot: { coords: [48.7310, -121.0680], label: "Ross Lake Resort" },
+        paragraphs: [
+          "Hidden deeper within the wilderness lies Ross Lake Resort. Floating cabins rest upon the water. Boats wait patiently nearby. Visitors can venture across the lake at their own pace. It struck me as one of the most beautiful resorts in the western United States. Imagine waking up surrounded by mountains and stepping directly onto a boat."
+        ]
+      },
+      {
+        paragraphs: [
+          "We continued to Ross Dam and admired the view one last time. The lakes, the forests, the peaks, and the endless shades of blue seemed to blend into one memory. Perhaps that is what I will remember most about North Cascades. Not a single destination. Not a single hike. But the fifty shades of blue.",
+          "The French painter Claude Monet once said, \"Color is my day-long obsession, joy, and torment.\" I thought of those words as we drove home."
+        ]
+      }
+    ]
+  },
+  {
     id: "zion",
     name: "Zion National Park",
     state: "Utah",
