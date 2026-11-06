@@ -102,7 +102,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
     linear-gradient(180deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0) 22%,
                     rgba(0, 0, 0, 0) 72%, rgba(0, 0, 0, 0.66) 100%);
 }
-/* Tints CARTO's gray dark basemap toward dusk navy. Tune hue-rotate
+/* Tints the Esri dark gray basemap toward dusk navy. Tune hue-rotate
    for the hue (lower is bluer, higher is more purple) and saturate
    for how strong the color reads. */
 .leaflet-tile {

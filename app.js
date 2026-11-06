@@ -15,13 +15,19 @@
 
   /* ---------- 1. Config and helpers ---------- */
 
-  /* CARTO dark basemap via its public endpoint, no API key needed.
+  /* Esri World Dark Gray basemap plus its label layer, served from
+     Esri's public tile endpoint. CARTO's public endpoint began returning
+     "API KEY REQUIRED" tiles in 2026, so the site moved here. Esri tile
+     URLs use {z}/{y}/{x}, not {z}/{x}/{y}. The tiles stop at zoom 16.
      The dusk navy cast comes from the .leaflet-tile filter in
-     style.css. To change providers, swap this URL and attribution. */
+     style.css. To change providers, swap these URLs and attribution. */
   const BASEMAP_URL =
-    "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+  const BASEMAP_LABELS_URL =
+    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}";
   const BASEMAP_ATTR =
-    "Map &copy; <a href='https://carto.com/attributions'>CARTO</a> &copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
+    "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ";
+  const BASEMAP_MAX_ZOOM = 16;
 
   const PREFERS_REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const MOBILE = window.matchMedia("(max-width: 760px)");
@@ -63,7 +69,15 @@
       zoomSnap: 0.5
     });
     map.attributionControl.setPrefix(false);
-    L.tileLayer(BASEMAP_URL, { maxZoom: 18, attribution: BASEMAP_ATTR }).addTo(map);
+    L.tileLayer(BASEMAP_URL, {
+      maxZoom: BASEMAP_MAX_ZOOM,
+      maxNativeZoom: BASEMAP_MAX_ZOOM,
+      attribution: BASEMAP_ATTR
+    }).addTo(map);
+    L.tileLayer(BASEMAP_LABELS_URL, {
+      maxZoom: BASEMAP_MAX_ZOOM,
+      maxNativeZoom: BASEMAP_MAX_ZOOM
+    }).addTo(map);
     return map;
   }
 
