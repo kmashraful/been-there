@@ -136,6 +136,3 @@ Both blocks are optional and work for any place, not just San Francisco.
 
 The color system lives in `:root` at the top of `style.css`. The palette is white `#FFFFFF`, silver `#E5E5E5`, gold `#FCA311`, navy `#14213D`, and black `#000000`. Change the tokens there to re-skin the whole site. The intro copy is plain HTML near the top of `index.html`. The basemap tile URL is a constant at the top of `app.js` if you want a different map provider.
 
-## A note on map tiles
-
-The site uses Esri's World Dark Gray basemap and its label layer via Esri's public tile endpoint with attribution kept intact. The site first used CARTO's Dark Matter tiles, but CARTO's public endpoint now returns "API KEY REQUIRED" tiles, so it moved to Esri. The dusk navy color is not in the tiles themselves. It comes from a CSS filter on `.leaflet-tile` in `style.css`, where `hue-rotate` sets the hue and `saturate` sets the strength. I am not certain about the exact usage limits of the public endpoint. It is generally fine for light personal sites, but a high-traffic site may need a keyed provider. To get the exact Mapbox Dusk style instead, you would need a free Mapbox account and a switch from Leaflet to Mapbox GL JS, since that style is not served as plain tiles. Swapping raster providers only means editing the URL constant at the top of `app.js`.
